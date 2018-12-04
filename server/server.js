@@ -3,31 +3,30 @@ exports.run = (io, game) => {
         const socketAddress = socket.client.conn.remoteAddress;
         console.log('New Connection: ', socketAddress);
 
-        // const user = game.getUser(socketAddress);
-        // console.log(user);
-
-        // if (user) {
-        //     // echo globally that a person has connected
-        //     socket.broadcast.emit('user joined', {
-        //         username: user.username,
-        //         numUsers: game.getNumUsers()
-        //     });
-        // } else {
-        //     // Tell the client to add user
-        //     socket.emit('add user');
-        // }
-
         socket.on('add user', username => {
             const data = {
                 username,
                 address: socketAddress
             };
-            game.addUser(data);
 
-            console.log(`adding ${username}`);
-            
-            socket.broadcast.emit('user joined', {username});
+            const response = game.addUser(data);
+
+            if (response.ok) {
+                console.log(response.msg);
+
+                socket.emit('login', {
+                    numUsers: game.getNumOfUsers()
+                });
+
+                socket.broadcast.emit('user joined', {
+                    username,
+                    numUsers: game.getNumOfUsers()
+                });
+            } else {
+                socket.emit('retry login', {
+                    msg: response.msg
+                });
+            }
         });
-
     });
 }
