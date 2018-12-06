@@ -1,4 +1,4 @@
-const User = require('./User');
+const User = require('../../../arch/server/User');
 
 module.exports = class Game {
     constructor(){

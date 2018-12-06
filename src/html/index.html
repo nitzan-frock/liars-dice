@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Liar's Dice</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="styles.css">
+</head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="client" class="client">
+            <ul class="pages">
+                <li class="login page">
+                    <div class="form">
+                        <h3 class="title">Name?</h3>
+                        <input class="username-input" type="text" maxlength="16"/>
+                        <button class="submit">Join!</button>
+                    </div>
+                </li>
+                <li class="game page">
+                    <div class="game-area">
+                        <h1>Game goes here :)</h1>
+                    </div>
+                    <div class="chat-area">
+                        <h3>Chat</h3>
+                        <div class="messages-container">
+                            <ul class="messages"></ul>
+                        </div>
+                        <div class="input-container">
+                            <input class="chat-input" type="text" maxlength="350" />
+                            <div class="send-message-btn">Send</div>
+                        </div>
+                    </div>
+                    <div class="navbar">
+                        <ul class="tabs">
+                            <li class="chat-tab">Chat</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+    </body>
+</html>

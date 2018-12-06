@@ -1,10 +1,12 @@
+import $ from 'jquery';
+import io from 'socket.io-client';
+import chat from './js/chat/chat';
+import helpers from './js/helpers/helpers';
+import './css/styles.css';
+
 $("document").ready(main());
 
-const chat = require('./chat/chat');
-const helpers = require('./helpers/helpers');
-
 function main () {
-
     const $window = $(window);
     const $loginPage = $('.login.page');
     const $gamePage = $('.game.page');
@@ -16,36 +18,18 @@ function main () {
 
     let username;
     let $currentInput = $usernameInput.focus();
+    $currentInput.val('');
 
-    const socket = io();
+    const server = io();
 
     const setUsername = () => {
         username = helpers.cleanInput($usernameInput.val().trim());
+        console.log(username);
 
         if (username) {
-            socket.emit('add user', username);
+            server.emit('add user', username);
         }
     }
-
-    // const log = (message, options) => {
-    //     let el = $('<li>').addClass('log').text(message);
-    //     addMessageElement(el, options);
-    // }
-
-    // const addMessageElement = (el, options) => {
-    //     $messages.append(el);
-    //     $messages[0].scrollTop = $messages[0].scrollHeight;
-    // }
-
-    
-
-    // const sendMessage = () => {
-    //     let message = $chatInput.val();
-    //     message = cleanInput(message);
-    //     console.log(message);
-    //     $chatInput.val('');
-        
-    // }
 
     // Keyboard events
 
@@ -55,6 +39,7 @@ function main () {
         }
 
         if (event.which === 13) {
+            console.log('enter');
             if (!username) {
                 setUsername();
             }
@@ -71,19 +56,24 @@ function main () {
 
     // Socket events
 
-    socket.on('login', data => {
+    server.on('login', data => {
         $loginPage.fadeOut();
         $gamePage.show();
         $loginPage.off('click');
         chat.log(`There are ${data.numUsers} playing.`);
     });
 
-    socket.on('user joined', data => {
+    server.on('user joined', data => {
         log(data.username + ' joined!');
         chat.addParticipantsMessage(data);
     });
 
-    socket.on('retry login', msg => {
+    server.on('retry login', msg => {
 
     });
+}
+
+// Needed for Hot Module Replacement
+if (module.hot) {
+    module.hot.accept() // eslint-disable-line no-undef  
 }

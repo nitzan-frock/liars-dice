@@ -1,6 +1,6 @@
-const helpers = require('../helpers/helpers');
+import helpers from '../helpers/helpers';
 
-export const chat = (function () {
+const chat = (function () {
     const $chatInput = $('.chat-input');
     const $sendMessageButton = $('send-message-btn');
     const $messages = $('messages');
@@ -36,3 +36,5 @@ export const chat = (function () {
         log(`There are ${data.numUsers} players.`);
     }
 })();
+
+export default chat;

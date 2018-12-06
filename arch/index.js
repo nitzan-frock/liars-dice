@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 
 const server = require('./server/server.js');
 const Game = require('./server/Game.js');
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
     res.sendFile(__dirname + 'client/index.html');
 });
 
-http.listen(3000, () => {
+http.listen(port, () => {
     console.log(`listening on *:${port}`);
 });
 

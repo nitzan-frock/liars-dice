@@ -3,7 +3,7 @@
     "version": "0.0.1",
     "description": "Liar's dice game built with express and socket.io",
     "scripts": {
-        "start": "node index.js"
+        "start": "node ./arch/index.js"
     },
     "dependencies": {
         "express": "^4.16.4",

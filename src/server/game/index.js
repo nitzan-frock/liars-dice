@@ -9,6 +9,8 @@ exports.run = (io, game) => {
                 address: socketAddress
             };
 
+            console.log('add user');
+
             const response = game.addUser(data);
 
             if (response.ok) {
