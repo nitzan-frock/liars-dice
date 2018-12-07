@@ -3,10 +3,13 @@
     "version": "0.0.1",
     "description": "Liar's dice game built with express and socket.io",
     "scripts": {
-        "start": "node ./arch/index.js"
+        "start": "nodemon ./arch/index.js"
     },
     "dependencies": {
         "express": "^4.16.4",
         "socket.io": "^2.1.1"
+    },
+    "devDependencies": {
+        "nodemon": "^1.18.7"
     }
 }

@@ -30,5 +30,10 @@ exports.run = (io, game) => {
                 socket.emit('retry login', response.msg);
             }
         });
+
+        socket.on('disconnect', () => {
+            console.log(`disconnected`);
+            // game.removeUser(username);
+        })
     });
 }

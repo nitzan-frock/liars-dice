@@ -11,16 +11,16 @@ module.exports = class Game {
         console.log('hello');
     }
 
-    getUserByAddress(address) {
+    getUserById(id) {
         return this.users.filter(user => {
-            if (user.address === address) {
+            if (user.id === id) {
                 return true;
             }
         })[0];
     }
 
-    usernameExists(username) {
-        return this.usernames[username] ? true: false;
+    userExists(username) {
+        return this.users[username] ? true: false;
     }
 
     addUser(data) {
@@ -39,6 +39,10 @@ module.exports = class Game {
             }
         }
         return response;
+    }
+
+    removeUser(username) {
+        delete this.usernames[username];
     }
 
     getNumOfUsers() {
