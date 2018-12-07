@@ -1,1 +1,0 @@
-export default logMessage = msg => console.log(msg);

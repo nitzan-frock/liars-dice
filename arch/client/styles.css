@@ -1,5 +1,6 @@
 html, body {
     height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
 }
@@ -19,13 +20,16 @@ ul {
     height: 100%;
     position: absolute;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .game {
     display: none;
 }
 
-.login.page {
+.login {
     background-color: black;
     color: white;
 }
@@ -73,12 +77,12 @@ ul {
 
 }
 
-.send-message {
+.send-message-btn {
     display: block;
     background: gray;
     padding: 5px;
 }
 
-.send-message:hover {
+.send-message-btn:hover {
     background: lightgray;
 }

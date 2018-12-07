@@ -1,31 +1,34 @@
-const User = require('./User');
+const Player = require('./Player');
 
 module.exports = class Game {
     constructor(){
-        this.numUsers = 0;
-        this.users = {};
+        this.numPlayers = 0;
+        this.players = [];
     }
 
     hello(){
         console.log('hello');
     }
 
-    getUserById(id) {
-        return this.users.filter(user => {
-            if (user.id === id) {
-                return true;
-            }
-        })[0];
+    getPlayerById(id) {
+        let player = this.players.filter(player => {
+            return player.id === id ? player : null;
+        });
+        return player;
     }
 
     usernameExists(username) {
-        return Object.keys(this.users).map(user)
+        return this.players.some(player => {
+            return player.username === username ? true : false;
+        });
     }
 
-    addUser(data) {
+    addPlayer(data) {
         let response;
         if (!this.usernameExists(data.username)) {
-            this.users[data.id] = data.username;
+            let player = new Player(data);
+            this.players.push(player);
+            console.log(this.players);
             response = {
                 ok: true,
                 msg: `${data.username} added.`
@@ -34,16 +37,19 @@ module.exports = class Game {
             response = {
                 ok: false, 
                 msg: `Username exists.`
-            }
+            };
         }
         return response;
     }
 
-    removeUser(username) {
-        delete this.usernames[username];
+    removePlayer(id) {
+        console.log(`remove player with id: ${id}`);
+        this.players = this.players.filter(player => {
+            return player.id !== id;
+        });
     }
 
-    getNumOfUsers() {
-        return this.users.length;
+    getNumOfPlayers() {
+        return this.players.length;
     }
 }
