@@ -3,8 +3,7 @@ const User = require('./User');
 module.exports = class Game {
     constructor(){
         this.numUsers = 0;
-        this.users = [];
-        this.usernames = {};
+        this.users = {};
     }
 
     hello(){
@@ -19,15 +18,14 @@ module.exports = class Game {
         })[0];
     }
 
-    userExists(username) {
-        return this.users[username] ? true: false;
+    usernameExists(username) {
+        return Object.keys(this.users).map(user)
     }
 
     addUser(data) {
         let response;
         if (!this.usernameExists(data.username)) {
-            this.users.push(new User(data));
-            this.usernames[data.username] = 1;
+            this.users[data.id] = data.username;
             response = {
                 ok: true,
                 msg: `${data.username} added.`
