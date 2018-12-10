@@ -15,7 +15,7 @@ class Helpers {
         console.log(`constructing helpers instance`);
     }
     cleanInput(input) {
-        return $('<div>').text(input).html();
+        return $('<div/>').text(input).html();
     }
 
     /**

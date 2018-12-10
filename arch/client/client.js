@@ -13,14 +13,16 @@ const client = () => {
 
     const $window = $(window);    
 
-    const $loginPage = $('.login.page');
+    const $loginPage = $('.login');
     const $usernameInput = $('.username-input');
     $usernameInput.val('');
 
-    const $gamePage = $('.game.page');
+    const $gamePage = $('.game');
+    const $navbar = $('.navbar');
 
     const $chatTab = $('.chat-tab');
     const $chatArea = $('.chat-area');
+    const $gameArea = $('game-area');
 
     const helpers = new Helpers();
     const chat = new Chat(helpers);
@@ -41,6 +43,7 @@ const client = () => {
 
         if (username) {
             socket.emit('add user', username);
+            chat.setUsername(username);
             $currentInput.val('');
         }
     }
@@ -49,6 +52,7 @@ const client = () => {
         console.log('login');
         $loginPage.fadeOut();
         $gamePage.show();
+        $navbar.show();
         $loginPage.off('click');
         chat.log(`There are ${data.numUsers} playing.`);
     }
@@ -65,7 +69,11 @@ const client = () => {
             if (!(username && connected)) {
                 setUsername();
             } else if (connected) {
-                chat.sendMessage();
+                chat.addSelfMessage();
+                socket.emit('new message', {
+                    username: username,
+                    msg: chat.sendMessage()
+                });
             }
         }
     });
@@ -74,6 +82,7 @@ const client = () => {
 
     $chatTab.click(() => {
         $chatArea.toggle();
+        $gameArea.toggle();
         //chat.initializeEventHandlers();
         $currentInput = chat.$input.focus();
     });
@@ -102,6 +111,8 @@ const client = () => {
     });
 
     socket.on('new message', data => {
+        console.log('log new message...');
+        console.log(data);
         chat.addChatMessage(data)
     })
 }

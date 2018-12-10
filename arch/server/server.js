@@ -43,9 +43,12 @@ exports.run = (io, game) => {
         });
 
         socket.on('new message', data => {
+            console.log('\nNew Message:\n');
+            console.log(data);
+            console.log('\n');
             socket.broadcast.emit('new message', {
-                msg: data.message,
-                username: socket.username
+                username: socket.username,
+                msg: data.msg
             });
         });
     });

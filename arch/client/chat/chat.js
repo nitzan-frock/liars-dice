@@ -5,7 +5,9 @@ class Chat {
         console.log('constucting chat instance');
         this.$messages = $('.messages');
         this.$input = $('.chat-input');
+        this.username;
         this.helpers = helpers;
+        this.msgAddedToSelf = false;
     }
 
     log(message, options) {
@@ -13,20 +15,43 @@ class Chat {
         this.addMessageElement(el, options);
     }
 
+    setUsername(username) {
+        this.username = username;
+    }
+
     addMessageElement(el, options) {
         this.$messages.append(el);
         this.$messages[0].scrollTop = this.$messages[0].scrollHeight;
     }
 
-    addChatMessage(){}
+    addChatMessage(data){
+        console.log(data.username, data.msg);
+        let $usernameDiv = $('<span class="username"/>').text(data.username);
+        let $messageBodyDiv = $('<span class="message-body">').text(data.msg);
+        let $messageDiv = $('<li class="message"/>')
+            .data('username', data.username)
+            .append($usernameDiv, $messageBodyDiv);
+        console.log($messageBodyDiv);
+        this.addMessageElement($messageDiv);
+    }
+
+    addSelfMessage() {
+        this.addChatMessage({
+            username: this.username,
+            msg: this.sendMessage()
+        });
+        this.msgAddedToSelf = true;
+    }
 
     sendMessage() {
-        let message = $input.val();
+        let message = this.$input.val().trim();
         if (message) {
             message = this.helpers.cleanInput(message);
-            console.log(message);
-            socket.emit('new message', message);
-            $input.val('');
+            if (this.msgAddedToSelf) {
+                this.$input.val('');
+                this.msgAddedToSelf = false;
+            }
+            return message;
         }
     }
 
