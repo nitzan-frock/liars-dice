@@ -4,6 +4,9 @@ module.exports = class Game {
     constructor(){
         this.numPlayers = 0;
         this.players = [];
+        this.maxPlayers = 6;
+        this.waitingForPlayers = true;
+        this.roundInProgress = false;
     }
 
     hello(){
@@ -51,5 +54,19 @@ module.exports = class Game {
 
     getNumOfPlayers() {
         return this.players.length;
+    }
+
+    hasPlayers() {
+        const numPlayers = this.getNumOfPlayers();
+        if (numPlayers <= 1) return false;
+        else {
+            return true;
+        }
+    }
+
+    startRound() {
+        if (this.hasPlayers()) {
+            this.round
+        }
     }
 }

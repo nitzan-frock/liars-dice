@@ -1,9 +1,16 @@
+
+
 html, body {
     font-family: 'helvetica';
+    font-size: 12pt;
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
+    --main-color: #388E3C;
+    --bg-color: #81C784;
+    --dice-color: #FFF8E1;
+    --dice-divet-color: #C62828;
 }
 
 body {
@@ -11,14 +18,70 @@ body {
     flex-flow: column;
 }
 
+.overlay {
+    display: none;
+}
+
 ul {
     list-style: none;
     word-wrap: break-word;
 }
 
+.header-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color: var(--main-color);
+}
+
+.game-title {
+    width: 100%;
+    color: white;
+    box-sizing: border-box;
+    display: flex;
+    padding-left: 5%;
+    align-items: center;
+}
+
+.game-title p {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+}
+
+.help-container {
+    border: 4px solid #81D4FA;
+    display: flex;
+    margin: 5px;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    box-sizing: border-box;
+    background-color: #0288D1;
+    border-radius: 100%;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.help-container p {
+    font-size: 2rem;
+    padding: 0;
+    margin: 0;
+    color: white;
+}
+
 .game {
     width: 100%;
     height: 100%;
+}
+
+.game-table {
+    width: 100%;
+    height: 100%;
+    padding-bottom: 50px;
+    background-color: var(--bg-color);
 }
 
 .game-area {
@@ -59,6 +122,7 @@ ul {
     padding: 12px;
     text-align: center;
     font-size: 26px;
+    outline: none;
 }
 
 .navbar {
@@ -107,16 +171,22 @@ ul {
     display: flex;
     height: 100%;
     width: 100%;
-    padding: 0px 35px;
+    padding: 0 10%;
     flex-direction: column;
     border: 2px solid;
     box-sizing: border-box;
 }
 
+@media screen and (max-width: 600px) {
+    .chat-container {
+        padding: 0 5%;
+    }
+}
+
 .messages-container {
     width: 100%;
     height: 100%;
-    border: solid pink;
+    border: 5px solid pink;
     box-sizing: border-box;
     padding-bottom: 50px;
 }
@@ -125,7 +195,8 @@ ul {
     height: 100%;
     overflow-y: scroll;
     background-color: white;
-    margin: 0;
+    margin: 0 0 5px 0;
+    padding: 0 5%;
 }
 
 .message {
@@ -145,7 +216,7 @@ ul {
 
 .username {
     font-weight: 600;
-    padding-right: 10px;
+    padding-right: 0.25rem;
 }
 
 .message-body {

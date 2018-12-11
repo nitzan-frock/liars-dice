@@ -67,12 +67,16 @@ const client = () => {
         if (event.which === 13) {
             console.log('enter');
             if (!(username && connected)) {
+                $currentInput.blur();
                 setUsername();
             } else if (connected) {
-                chat.addSelfMessage();
-                socket.emit('new message', {
-                    username: username,
-                    msg: chat.sendMessage()
+                $currentInput.blur();
+                chat.sendMessage((message) => {
+                    console.log(`message to be sent to server: ${message}`);
+                    socket.emit('new message', {
+                        username: username,
+                        message: message
+                    });
                 });
             }
         }

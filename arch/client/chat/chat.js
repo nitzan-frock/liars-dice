@@ -7,7 +7,7 @@ class Chat {
         this.$input = $('.chat-input');
         this.username;
         this.helpers = helpers;
-        this.msgAddedToSelf = false;
+        this.$input.val('');
     }
 
     log(message, options) {
@@ -25,9 +25,9 @@ class Chat {
     }
 
     addChatMessage(data){
-        console.log(data.username, data.msg);
-        let $usernameDiv = $('<span class="username"/>').text(data.username);
-        let $messageBodyDiv = $('<span class="message-body">').text(data.msg);
+        console.log(data.username, data.message);
+        let $usernameDiv = $('<span class="username"/>').text(data.username+':');
+        let $messageBodyDiv = $('<span class="message-body">').text(data.message);
         let $messageDiv = $('<li class="message"/>')
             .data('username', data.username)
             .append($usernameDiv, $messageBodyDiv);
@@ -35,23 +35,29 @@ class Chat {
         this.addMessageElement($messageDiv);
     }
 
-    addSelfMessage() {
-        this.addChatMessage({
-            username: this.username,
-            msg: this.sendMessage()
-        });
-        this.msgAddedToSelf = true;
+    /**
+     * sendMessage(toServer) adds a message to the client, and sends a message to the server using
+     * the callback toServer that takes an arg for message
+     */
+    sendMessage(toServer) {
+        const message = this.getMessageFromInput();
+        if (message) {
+            this.$input.val('');
+            this.addChatMessage({
+                username: this.username,
+                message: message
+            });
+            toServer(message);
+        }
     }
 
-    sendMessage() {
-        let message = this.$input.val().trim();
+    getMessageFromInput() {
+        const dirtyMessage = this.$input.val().trim();
+        const message = this.helpers.cleanInput(dirtyMessage);
         if (message) {
-            message = this.helpers.cleanInput(message);
-            if (this.msgAddedToSelf) {
-                this.$input.val('');
-                this.msgAddedToSelf = false;
-            }
             return message;
+        } else {
+            return null;
         }
     }
 
