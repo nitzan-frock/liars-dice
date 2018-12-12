@@ -31,7 +31,7 @@ class Chat {
         let $messageDiv = $('<li class="message"/>')
             .data('username', data.username)
             .append($usernameDiv, $messageBodyDiv);
-        console.log($messageBodyDiv);
+        console.log($messageDiv);
         this.addMessageElement($messageDiv);
     }
 

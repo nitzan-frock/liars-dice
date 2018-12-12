@@ -26,6 +26,7 @@ const client = () => {
 
     const helpers = new Helpers();
     const chat = new Chat(helpers);
+    const lobby = new Lobby();
 
     chat.logMessage('this is logged from chat class');
 
@@ -49,11 +50,14 @@ const client = () => {
     }
 
     const login = (data) => {
-        console.log('login');
+        console.log('[login]');
         $loginPage.fadeOut();
         $gamePage.show();
         $navbar.show();
         $loginPage.off('click');
+        data.players.map(player => {
+            lobby.addPlayer(player);
+        });
         chat.log(`There are ${data.numUsers} playing.`);
     }
 
@@ -98,9 +102,19 @@ const client = () => {
         login(data);
     });
 
-    socket.on('user joined', data => {
-        chat.log(data.username + ' joined!');
-        chat.addParticipantsMessage(data);
+    socket.on('user joined', user => {
+        console.log(`user joined ${user.username}`);
+        chat.log(user.username + ' joined!');
+        lobby.addPlayer(user);
+        console.log(`player added`);
+        //chat.addParticipantsMessage(data);
+    });
+
+    socket.on('player left', data => {
+        console.log(`player left ${data.player.username}`);
+        chat.log(`${data.player.username} left. \n
+            ${data.numUsers} player(s) playing.`);
+        lobby.removePlayer(data.player.id);
     });
 
     socket.on('retry login', msg => {
@@ -118,5 +132,5 @@ const client = () => {
         console.log('log new message...');
         console.log(data);
         chat.addChatMessage(data)
-    })
+    });
 }

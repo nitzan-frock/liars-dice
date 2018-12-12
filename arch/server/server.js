@@ -4,27 +4,29 @@ exports.run = (io, game) => {
     let numUsers = 0;
     io.on('connection', socket => {
         console.log('new connection: ',socket.id);
+        socket.join('lobby');
         let addedUser = false;
 
         socket.on('add user', (username) => {
             if (addedUser) return;
 
-
-            let response = game.addPlayer({
-                username: username,
-                id: socket.id
-            });
+            socket.username = username;
+            let response = game.addPlayer(socket);
 
             if (response.ok) {
-                socket.username = username;
+                let player = {
+                    username: response.player.username,
+                    id: response.player.id,
+                    status: response.player.status
+                };
                 numUsers++;
                 addedUser = true;
                 socket.emit('login', {
-                    numUsers: numUsers
+                    numUsers: numUsers,
+                    players: game.getAllPlayers()
                 });
-                socket.broadcast.emit('user joined', {
-                    username: socket.username
-                });
+                console.log('tell all players user joined');
+                socket.to('lobby').emit('user joined', player);
             } else {
                 socket.emit('retry login', response.msg);
             }
@@ -32,11 +34,12 @@ exports.run = (io, game) => {
 
         socket.on('disconnect', () => {
             if (addedUser) {
-                game.removePlayer(socket.id);
+                let player = game.removePlayer(socket.id);
+                console.log(`removed ${player.username}`);
                 numUsers--;
                 
-                socket.broadcast.emit('user left', {
-                    username: socket.username,
+                io.to('lobby').emit('player left', {
+                    player: player,
                     numUsers: numUsers
                 });
             }
@@ -46,82 +49,12 @@ exports.run = (io, game) => {
             console.log('\nNew Message:');
             console.log(data);
             console.log();
-            socket.broadcast.emit('new message', {
+            socket.to('lobby').emit('new message', {
                 username: socket.username,
                 message: data.message
             });
         });
     });
-
-    //     let UID;
-    //     console.log('New Socket Connection: ', socket.id);
-
-    //     socket.on('user connected', (uuid) => {
-    //         if (!includes(users, uuid)) {
-    //             connectedUsers.push(uuid);
-    //             users.push(uuid);
-    //             console.log(`new user connected: ${uuid}`);
-    //         } else {
-    //             console.log('existing user connected: ' + uuid);
-    //             connectedUsers.push(uuid);
-    //             console.log('connected Users');
-    //             console.log(connectedUsers);
-    //             console.log('\n\n');
-    //             let player = game.getPlayerById(uuid);
-    //             socket.emit('login existing', {
-    //                 username: player.username,
-    //                 numUsers: connectedUsers.length
-    //             });
-    //         }
-    //         UID = uuid;
-    //     });
-
-    //     socket.on('disconnect', () => {
-    //         if (UID) {
-    //             console.log(`${UID} disconnected`);
-    //             connectedUsers = pop(connectedUsers, UID);
-    //             const TIMEOUT = 5000;
-    //             setTimeout(() => {
-    //                 console.log(connectedUsers);
-    //                 console.log(UID);
-    //                 console.log(includes(connectedUsers, UID));
-    //                 if (!includes(connectedUsers, UID)) {
-    //                     users = pop(users, UID);
-    //                     console.log(`user removed: ${UID}`);
-    //                     game.removePlayer(UID);
-    //                     UID = null;
-    //                 };
-    //             }, TIMEOUT);
-    //         }
-    //     });
-
-    //     socket.on('add player', username => {
-    //         console.log('\n\nprocess add player: ', username);
-    //         console.log(UID);
-    //         const data = {
-    //             username,
-    //             id: UID
-    //         };
-
-    //         const response = game.addPlayer(data);
-
-    //         console.log(response);
-
-    //         if (response.ok) {
-    //             socket.emit('login', {
-    //                 numUsers: game.getNumOfPlayers()
-    //             });
-
-    //             socket.broadcast.emit('player joined', {
-    //                 username,
-    //                 numUsers: game.getNumOfPlayers()
-    //             });
-    //         } else {
-    //             console.log('retry');
-    //             socket.emit('retry login', response.msg);
-    //         }
-    //     });
-    // });
 }
 
 const includes = (arr, value) => {

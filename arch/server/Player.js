@@ -1,6 +1,8 @@
 module.exports = class Player {
-    constructor(data){
-        this.username = data.username;
-        this.id = data.id;
+    constructor(socket){
+        this.socket = socket;
+        this.username = socket.username;
+        this.status = 'idle'
+        this.id = socket.id;
     }
 }

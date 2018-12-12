@@ -17,5 +17,5 @@ http.listen(port, () => {
     console.log(`listening on *:${port}`);
 });
 
-const game = new Game();
+const game = new Game(io);
 server.run(io, game);
