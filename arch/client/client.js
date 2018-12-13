@@ -22,18 +22,15 @@ const client = () => {
 
     const $chatTab = $('.chat-tab');
     const $chatArea = $('.chat-area');
-    const $gameArea = $('game-area');
-
-    const helpers = new Helpers();
-    const chat = new Chat(helpers);
-    const lobby = new Lobby();
-
-    chat.logMessage('this is logged from chat class');
+    const $gameArea = $('.game-area');
 
     let username;
     let $currentInput = $usernameInput.focus();
 
     const socket = io();
+    const helpers = new Helpers();
+    const chat = new Chat(helpers);
+    const lobby = new Lobby(socket);
 
     let connected = false;
 

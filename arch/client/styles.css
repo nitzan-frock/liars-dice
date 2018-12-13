@@ -127,6 +127,34 @@ ul {
     background-color: var(--dice-divet-color);
     padding: 15px;
     border-radius: 5%;
+    cursor: pointer;
+}
+
+.ready-button:hover {
+    background-color: #EF5350;
+    box-shadow: 3px 2px 3px hsl(0, 80%, 13%, 0.5);
+}
+
+.ready-button:active {
+    background-color: var(--main-color);
+    box-shadow: 0 0 10px white;
+    animation-name: glow;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes glow {
+    0%      {box-shadow: 0 0 10px white}
+    10%     {box-shadow: 0 0 20px white}
+    20%     {box-shadow: 0 0 30px white}
+    30%     {box-shadow: 0 0 40px white}
+    40%     {box-shadow: 0 0 45px white}
+    50%     {box-shadow: 0 0 50px white}
+    60%     {box-shadow: 0 0 45px white}
+    70%     {box-shadow: 0 0 40px white}
+    80%     {box-shadow: 0 0 30px white}
+    90%     {box-shadow: 0 0 20px white}
+    100%    {box-shadow: 0 0 15px white}
 }
 
 .ready-button p {
@@ -275,4 +303,14 @@ ul {
 
 .message-body {
     color: black;
+}
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;  /* Non-prefixed version, currently
+                        supported by Chrome and Opera */
 }

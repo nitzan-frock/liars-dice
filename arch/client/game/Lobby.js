@@ -1,6 +1,8 @@
 class Lobby {
-    constructor() {
+    constructor(socket) {
         this.$players = $('.players-list');
+        this.socket = socket;
+        this.playerReady = false;
     }
 
     addPlayer(player){
@@ -25,6 +27,13 @@ class Lobby {
         let $playerDiv = $(`#lobby-${id}`);
         $playerDiv.fadeOut(() => {
             $(this).remove();
+        });
+    }
+
+    addClickListeners() {
+        this.$ready.click(() => {
+            if (!this.playerReady)
+                this.$ready.addClass('active');
         });
     }
 }
