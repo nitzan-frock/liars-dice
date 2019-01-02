@@ -131,11 +131,10 @@ ul {
 }
 
 .ready-button:hover {
-    background-color: #EF5350;
     box-shadow: 3px 2px 3px hsl(0, 80%, 13%, 0.5);
 }
 
-.ready-button:active {
+.ready {
     background-color: var(--main-color);
     box-shadow: 0 0 10px white;
     animation-name: glow;
@@ -144,7 +143,7 @@ ul {
 }
 
 @keyframes glow {
-    0%      {box-shadow: 0 0 10px white}
+    0%      {box-shadow: 0 0 15px white}
     10%     {box-shadow: 0 0 20px white}
     20%     {box-shadow: 0 0 30px white}
     30%     {box-shadow: 0 0 40px white}

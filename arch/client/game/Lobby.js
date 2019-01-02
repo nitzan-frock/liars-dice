@@ -1,8 +1,11 @@
 class Lobby {
-    constructor(socket) {
+    constructor() {
         this.$players = $('.players-list');
-        this.socket = socket;
+        this.$ready = $('.ready-button');
+        this.observers = [];
         this.playerReady = false;
+
+        this.addClickListeners();
     }
 
     addPlayer(player){
@@ -32,8 +35,29 @@ class Lobby {
 
     addClickListeners() {
         this.$ready.click(() => {
-            if (!this.playerReady)
-                this.$ready.addClass('active');
+            if (!this.playerReady) {
+                console.log('player ready');
+                this.$ready.addClass('ready');
+                this.playerReady = true;
+            } else {
+                this.$ready.removeClass('ready');
+                this.playerReady = false;
+            }
         });
+    }
+
+    addObserver(observer) {
+        this.observers.push(observer);
+    }
+
+    removeObserver(observer) {
+        const newObservers = this.observers.filter(obs => {
+            return obs !== observer ? true : false;
+        });
+        this.observers = newObservers;
+    }
+
+    notify(event) {
+        this.observers.forEach(observer => observer.onNotify(event));
     }
 }

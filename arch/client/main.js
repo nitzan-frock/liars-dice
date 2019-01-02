@@ -5,12 +5,12 @@ function main () {
         $.getScript('/helpers/helpers.js'),
         $.getScript('/chat/Chat.js'),
         $.getScript('/game/Lobby.js'),
-        $.getScript('client.js'),
+        $.getScript('Client.js'),
         $.Deferred(deferred => {
             $(deferred.resolve);
         })
     ).done(() => {
         //console.log(new Chat(helpers));
-        client();
+        const client = new Client();
     });
 }

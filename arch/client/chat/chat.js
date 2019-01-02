@@ -10,6 +10,10 @@ class Chat {
         this.$input.val('');
     }
 
+    focusChatInput() {
+        this.$input.focus();
+    }
+
     log(message, options) {
         let el = $('<li>').addClass('log').text(message);
         this.addMessageElement(el, options);

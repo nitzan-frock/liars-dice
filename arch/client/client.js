@@ -1,133 +1,145 @@
-const client = () => {
+class Client {
+    constructor() {
+        // // When the client starts, create the uid.
+        // let UID = localStorage.getItem('uUID');
+        // if (!UID) {
+        //     UID = Math.random().toString(24) + new Date().getTime();
+        //     localStorage.setItem('uUID', UID);
+        // }
 
-    // // When the client starts, create the uid.
-    // let UID = localStorage.getItem('uUID');
-    // if (!UID) {
-    //     UID = Math.random().toString(24) + new Date().getTime();
-    //     localStorage.setItem('uUID', UID);
-    // }
+        // // Emit the UID right after connection
+        // socket.emit('user connected', UID);
+        
 
-    // // Emit the UID right after connection
-    // socket.emit('user connected', UID);
-    
+        this.$window = $(window);    
 
-    const $window = $(window);    
+        this.$loginPage = $('.login');
+        this.$usernameInput = $('.username-input');
+        this.$usernameInput.val('');
 
-    const $loginPage = $('.login');
-    const $usernameInput = $('.username-input');
-    $usernameInput.val('');
+        this.$gamePage = $('.game');
+        this.$navbar = $('.navbar');
 
-    const $gamePage = $('.game');
-    const $navbar = $('.navbar');
+        this.$chatTab = $('.chat-tab');
+        this.$chatArea = $('.chat-area');
+        this.$gameArea = $('.game-area');
 
-    const $chatTab = $('.chat-tab');
-    const $chatArea = $('.chat-area');
-    const $gameArea = $('.game-area');
+        this.username;
+        this.$currentInput = this.$usernameInput.focus();
 
-    let username;
-    let $currentInput = $usernameInput.focus();
+        this.socket = io();
+        this.helpers = new Helpers();
+        this.chat = new Chat(this.helpers);
+        this.lobby = new Lobby();
+        this.lobby.addObserver(this);
 
-    const socket = io();
-    const helpers = new Helpers();
-    const chat = new Chat(helpers);
-    const lobby = new Lobby(socket);
+        this.connected = false;
 
-    let connected = false;
+        // Keyboard events
 
-    const setUsername = () => {
+        this.$window.keydown(event => {
+            if (!(event.ctrlKey || event.metaKey || event.altKey)) {
+                this.$currentInput.focus();
+            }
+
+            if (event.which === 13) {
+                console.log('enter');
+                if (!(this.username && this.connected)) {
+                    this.$currentInput.blur();
+                    this.setUsername();
+                } else if (this.connected) {
+                    this.$currentInput.blur();
+                    this.chat.sendMessage((message) => {
+                        console.log(`message to be sent to server: ${message}`);
+                        socket.emit('new message', {
+                            username: username,
+                            message: message
+                        });
+                    });
+                }
+            }
+        });
+
+        // Click events
+
+        this.$chatTab.click(() => {
+            this.$chatArea.toggle();
+            this.$gameArea.toggle();
+            //chat.initializeEventHandlers();
+            this.$currentInput = this.chat.focusChatInput();
+        });
+
+        // Socket events
+
+        this.socket.on('login', data => {
+            this.connected = true;
+            this.login(data);
+        });
+
+        this.socket.on('user joined', user => {
+            console.log(`user joined ${user.username}`);
+            this.chat.log(user.username + ' joined!');
+            this.lobby.addPlayer(user);
+            console.log(`player added`);
+            //chat.addParticipantsMessage(data);
+        });
+
+        this.socket.on('player left', data => {
+            console.log(`player left ${data.player.username}`);
+            this.chat.log(`${data.player.username} left. \n
+                ${data.numUsers} player(s) playing.`);
+            this.lobby.removePlayer(data.player.id);
+        });
+
+        this.socket.on('retry login', msg => {
+            alert(msg);
+            this.$currentInput = this.$usernameInput.focus();
+            this.username = null;
+        });
+
+        this.socket.on('login existing', data => {
+            this.username = data.username;
+            this.login(data);
+        });
+
+        this.socket.on('new message', data => {
+            console.log('log new message...');
+            console.log(data);
+            this.chat.addChatMessage(data)
+        });
+    }
+
+    setUsername() {
         console.log('setUsername');
-        username = helpers.cleanInput($usernameInput.val().trim());
+        let username = this.helpers.cleanInput(this.$usernameInput.val().trim());
         console.log(username);
 
         if (username) {
-            socket.emit('add user', username);
-            chat.setUsername(username);
-            $currentInput.val('');
+            this.socket.emit('add user', username);
+            this.chat.setUsername(username);
+            this.$currentInput.val('');
         }
     }
 
-    const login = (data) => {
+    login(data) {
         console.log('[login]');
-        $loginPage.fadeOut();
-        $gamePage.show();
-        $navbar.show();
-        $loginPage.off('click');
+        this.$loginPage.fadeOut();
+        this.$gamePage.show();
+        this.$navbar.show();
+        this.$loginPage.off('click');
         data.players.map(player => {
-            lobby.addPlayer(player);
+            this.lobby.addPlayer(player);
         });
-        chat.log(`There are ${data.numUsers} playing.`);
+        this.chat.log(`There are ${data.numUsers} playing.`);
     }
 
-    // Keyboard events
-
-    $window.keydown(event => {
-        if (!(event.ctrlKey || event.metaKey || event.altKey)) {
-            $currentInput.focus();
+    onNotify(event) {
+        switch (event) {
+            case '':
+                break;
+            default:
+                break;
         }
-
-        if (event.which === 13) {
-            console.log('enter');
-            if (!(username && connected)) {
-                $currentInput.blur();
-                setUsername();
-            } else if (connected) {
-                $currentInput.blur();
-                chat.sendMessage((message) => {
-                    console.log(`message to be sent to server: ${message}`);
-                    socket.emit('new message', {
-                        username: username,
-                        message: message
-                    });
-                });
-            }
-        }
-    });
-
-    // Click events
-
-    $chatTab.click(() => {
-        $chatArea.toggle();
-        $gameArea.toggle();
-        //chat.initializeEventHandlers();
-        $currentInput = chat.$input.focus();
-    });
-
-    // Socket events
-
-    socket.on('login', data => {
-        connected = true;
-        login(data);
-    });
-
-    socket.on('user joined', user => {
-        console.log(`user joined ${user.username}`);
-        chat.log(user.username + ' joined!');
-        lobby.addPlayer(user);
-        console.log(`player added`);
-        //chat.addParticipantsMessage(data);
-    });
-
-    socket.on('player left', data => {
-        console.log(`player left ${data.player.username}`);
-        chat.log(`${data.player.username} left. \n
-            ${data.numUsers} player(s) playing.`);
-        lobby.removePlayer(data.player.id);
-    });
-
-    socket.on('retry login', msg => {
-        alert(msg);
-        $currentInput = $usernameInput.focus();
-        username = null;
-    });
-
-    socket.on('login existing', data => {
-        username = data.username;
-        login(data);
-    });
-
-    socket.on('new message', data => {
-        console.log('log new message...');
-        console.log(data);
-        chat.addChatMessage(data)
-    });
+        
+    }
 }
