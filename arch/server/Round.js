@@ -1,8 +1,9 @@
 const Turn = require('./Turn.js');
+const Subject = require('./helpers/Subject');
 
-module.exports = class Round {
-    constructor(io, players) {
-        this.io = io;
+module.exports = class Round extends Subject {
+    constructor(players) {
+        super();
         this.players = players.map(player => {
             player.numDice = 5;
         });

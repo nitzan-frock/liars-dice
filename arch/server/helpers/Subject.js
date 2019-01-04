@@ -1,4 +1,6 @@
-class Subject {
+'use strict';
+
+module.exports = class Subject {
     constructor() {
         this.observers = [];
     }
@@ -13,7 +15,7 @@ class Subject {
         });
     }
 
-    notify(event) {
-        this.observers.forEach(observer => observer.onNotify(event));
+    notify(entity, event) {
+        this.observers.forEach(observer => observer.onNotify(entity, event));
     }
 }

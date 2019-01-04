@@ -1,9 +1,11 @@
 const Player = require('./Player');
 const Round = require('./Round');
+const Subject = require('./helpers/Subject');
 
-module.exports = class Game {
-    constructor(io){
-        this.io = io;
+module.exports = class Table extends Subject {
+    constructor(id){
+        super();
+        this.id = id;
         this.numPlayers = 0;
         this.players = [];
         this.playersInRound = [];
@@ -11,16 +13,13 @@ module.exports = class Game {
         this.minPlayers = 2;
         this.waitingForPlayers = true;
         this.roundInProgress = false;
-    }
-
-    hello(){
-        console.log('hello');
+        this.name;
     }
 
     getPlayerById(id) {
         let player = this.players.filter(player => {
             return player.id === id ? player : null;
-        });
+        })[0];
         return player;
     }
 
@@ -30,10 +29,10 @@ module.exports = class Game {
         });
     }
 
-    addPlayer(socket) {
+    addPlayer(username, id) {
         let response;
-        if (!this.usernameExists(socket.username)) {
-            let player = new Player(socket);
+        if (!this.usernameExists(username)) {
+            let player = new Player(username, id);
             this.players.push(player);
             console.log(this.players);
             response = {
@@ -54,19 +53,41 @@ module.exports = class Game {
             return {
                 username: player.username,
                 id: player.id,
-                status: player.status
+                ready: player.ready
             };
         });
     }
 
     readyPlayer(id){
         console.log(`[readyPlayer]`);
-        const player = this.getPlayerById(id);
+        const readyPlayer = this.getPlayerById(id);
         if (this.playersInRound.length <=6) {
-            this.playersInRound.push(player);
-            player.socket.leave('lobby');
-            player.socket.join('round');
+            readyPlayer.ready = true;
+            this.players.forEach(player => {
+                if (player.id === id) {
+                    player.ready = true;
+                }
+            });
+            this.playersInRound.push(readyPlayer);
         }
+        this.notify(readyPlayer, 'player-ready');
+        if (this.arePlayersReady()) this.start();
+    }
+
+    unreadyPlayer(id) {
+        console.log(`[unreadyPlayer]`);
+        const unreadyPlayer = this.getPlayerById(id);
+        const updatedPlayerList = this.playersInRound.filter(player => {
+            return player.id !== id ? true : false;
+        });
+        this.playersInRound = updatedPlayerList;
+        unreadyPlayer.ready = false;
+        this.players.forEach(player => {
+            if (player === id) {
+                player.ready = false;
+            }
+        });
+        this.notify(unreadyPlayer, 'player-not-ready');
     }
 
     removePlayer(id) {
@@ -95,6 +116,9 @@ module.exports = class Game {
                 return player;
             }
         });
+        
+        console.log(`enought players Ready? ${readyPlayers.length >= this.minPlayers && 
+            readyPlayers.length <= this.maxPlayers}`);
 
         return (
             readyPlayers.length >= this.minPlayers && 
@@ -102,16 +126,14 @@ module.exports = class Game {
         );
     }
 
-    startRound() {
-        if (this.arePlayersReady()) {
-            const round = new Round(this.io, this.playersInRound);
-            round.start();
-            this.roundInProgress = true;
+    start() {
+        const round = new Round(this.playersInRound);
+        round.start();
+        this.roundInProgress = true;
 
-            while (this.roundInProgress) {
-                if (round.hasEnded()) {
-                    this.roundInProgress = false;
-                }
+        while (this.roundInProgress) {
+            if (round.hasEnded()) {
+                this.roundInProgress = false;
             }
         }
     }

@@ -3,6 +3,7 @@ $("document").ready(main());
 function main () {
     $.when(
         $.getScript('/helpers/helpers.js'),
+        $.getScript('/helpers/Subject.js'),
         $.getScript('/chat/Chat.js'),
         $.getScript('/game/Lobby.js'),
         $.getScript('Client.js'),

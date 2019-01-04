@@ -15,10 +15,9 @@ class Lobby {
     createPlayerElement(player) {
         console.log(`[createPlayerElement]`);
         let $usernameDiv = $('<div class="lobby-username"/>').text(player.username);
-        let $statusDiv = $('<div class="lobby-status"/>').text(player.status);
+        let $statusDiv = $('<div class="lobby-status"/>').text(this.getPlayerStatus(player));
         let $playerDiv = $(`<li id="lobby-${player.id}" class="lobby-player-container"/>`)
             .append($usernameDiv, $statusDiv);
-        console.log($playerDiv);
         this.addPlayerElement($playerDiv);
     }
 
@@ -33,15 +32,27 @@ class Lobby {
         });
     }
 
+    changeReadyStatus(player) {
+        console.log(`change status`);
+        console.log(this.getPlayerStatus(player));
+        $(`#lobby-${player.id} > div.lobby-status`).text(this.getPlayerStatus(player));
+    }
+
+    getPlayerStatus(player) {
+        console.log(player);
+        return player.ready ? 'Ready' : 'Idle';
+    }
+
     addClickListeners() {
         this.$ready.click(() => {
             if (!this.playerReady) {
-                console.log('player ready');
                 this.$ready.addClass('ready');
                 this.playerReady = true;
+                this.notify('player-ready');
             } else {
                 this.$ready.removeClass('ready');
                 this.playerReady = false;
+                this.notify('player-not-ready');
             }
         });
     }
