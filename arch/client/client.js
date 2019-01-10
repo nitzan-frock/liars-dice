@@ -23,7 +23,6 @@ class Client {
         this.$chatTab = $('.chat-tab');
         this.$chatArea = $('.chat-area');
         this.$gameArea = $('.game-area');
-        this.$tables = $('.tables');
 
         this.username;
         this.$currentInput = this.$usernameInput.focus();
@@ -128,20 +127,8 @@ class Client {
 
     addTables(tables) {
         tables.forEach(table => {
-            createTableElement(table);
-            $(`#table-${table.id} > .join-table-button`).click(() => {
-                console.log(`join table ${table.id}`);
-            })
+            this.lobby.createTable(table);
         });
-    }
-
-    createTableElement(table) {
-        const $nameDiv = $(`<div class="table-name"/>`).text(table.name);
-        const $numPlayersDiv = $('<div class="table-numPlayers"/>').text(table.numPlayers);
-        const $joinButton = $('<div class="join-table-button"/>').text('Join');
-        const $tableDiv = $(`<li id="#table-${table.id}" class="table-container"/>`)
-            .append($nameDiv, $numPlayersDiv, $joinButton);
-        this.$tables.append($tableDiv);
     }
 
     setUsername() {
@@ -176,6 +163,8 @@ class Client {
             case 'player-not-ready':
                 this.socket.emit('player-not-ready', this.username);
                 break;
+            case 'player-joined-table':
+                this.socket.emit('player-joined-table', {})
             default:
                 break;
         }
