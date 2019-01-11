@@ -13,7 +13,7 @@ class Subject {
         });
     }
 
-    notify(event) {
-        this.observers.forEach(observer => observer.onNotify(event));
+    notify(entity, event) {
+        this.observers.forEach(observer => observer.onNotify(entity, event));
     }
 }

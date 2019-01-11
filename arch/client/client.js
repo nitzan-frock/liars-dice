@@ -123,6 +123,18 @@ class Client {
         this.socket.on('show tables', tables => {
             this.addTables(tables);
         });
+
+        this.socket.on('player-joined-table', (table) => {
+            console.log('player joined');
+            console.log(table);
+            console.log(table.numPlayers);
+        });
+        
+        this.socket.on('player-left-table', (table) => {
+            console.log('player left');
+            console.log(table);
+            this.lobby.updateNumPlayersAtTable(table.numPlayers);
+        });
     }
 
     addTables(tables) {
@@ -155,7 +167,7 @@ class Client {
         this.chat.log(`There are ${data.numUsers} playing.`);
     }
 
-    onNotify(event) {
+    onNotify(entity, event) {
         switch (event) {
             case 'player-ready':
                 this.socket.emit('player-ready', this.username);
@@ -164,7 +176,10 @@ class Client {
                 this.socket.emit('player-not-ready', this.username);
                 break;
             case 'player-joined-table':
-                this.socket.emit('player-joined-table', {})
+                console.log('notify the server');
+                this.socket.emit('player-joined-table', entity);
+            case 'player-left-table':
+                this.socket.emit('player-left-table', entity);
             default:
                 break;
         }

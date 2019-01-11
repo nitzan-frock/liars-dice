@@ -5,7 +5,6 @@ class Lobby {
         this.$ready = $('.ready-button');
         this.observers = [];
         this.playerReady = false;
-
         this.addClickListeners();
     }
 
@@ -29,19 +28,38 @@ class Lobby {
     createTable(table) {
         console.log(table);
         this.createTableElement(table);
-        $(`#table-${table.id} > .join-table-button`).click(() => {
-            this.observers.notify(table.id, 'joined-table');
+        this.joinLeaveTableAction(table.id);
+    }
+
+    joinLeaveTableAction(id) {
+        let $tableJoinBtn = $(`#table-${id} > .join-table-button`);
+        $tableJoinBtn.click(() => {
+            console.log(`clicked`);
+            if ($tableJoinBtn.hasClass('join')){
+                $tableJoinBtn.removeClass('join');
+                this.notify(id, 'player-joined-table');
+            } else {
+                $tableJoinBtn.addClass('join');
+                this.notify(id, 'player-left-table');
+            }
         });
     }
 
     createTableElement(table) {
         const $nameDiv = $(`<div class="table-name"/>`).text(table.name);
-        const $numPlayersText = $('<span class="table-numPlayers"/>').text(table.numPlayers);
-        const $numPlayersDiv = $('<div class="numPlayers"/>').text('Players: ').append($numPlayersText);
-        const $joinButton = $('<div class="join-table-button"/>').text('Join');
+        const $numPlayersText = $('<span class="table-numPlayers"/>')
+            .text(table.numPlayers);
+        const $numPlayersDiv = $('<div class="numPlayers"/>')
+            .text('Players: ').append($numPlayersText);
+        const $joinButton = $('<div class="join-table-button"/>')
+            .addClass('join').text('Join');
         const $tableDiv = $(`<li id="table-${table.id}" class="table-container"/>`)
             .append($nameDiv, $numPlayersDiv, $joinButton);
         this.$tables.append($tableDiv);
+    }
+
+    updateNumPlayersAtTable(numPlayers) {
+        $('.table-numPlayers').text(numPlayers);
     }
 
     removePlayer(id){
@@ -87,7 +105,7 @@ class Lobby {
         this.observers = newObservers;
     }
 
-    notify(event) {
-        this.observers.forEach(observer => observer.onNotify(event));
+    notify(entity, event) {
+        this.observers.forEach(observer => observer.onNotify(entity, event));
     }
 }

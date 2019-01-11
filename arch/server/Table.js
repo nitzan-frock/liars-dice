@@ -29,23 +29,17 @@ module.exports = class Table extends Subject {
         });
     }
 
-    addPlayer(username, id) {
-        let response;
-        if (!this.usernameExists(username)) {
-            let player = new Player(username, id);
-            this.players.push(player);
-            console.log(this.players);
-            response = {
-                ok: true,
-                player: player
-            }
-        } else {
-            response = {
-                ok: false, 
-                msg: `Username exists.`
-            };
-        }
-        return response;
+    addPlayer(player) {
+        this.players.push(player);
+        this.notify(this, 'player-joined-table');
+    }
+
+    removePlayerById(id) {
+        console.log(`remove player with id: ${id}`);
+        this.players = this.players.filter(player => {
+            if (player.id !== id) return true;
+        });
+        this.notify(this, 'player-left-table');
     }
 
     getAllPlayers() {
@@ -90,20 +84,8 @@ module.exports = class Table extends Subject {
         this.notify(unreadyPlayer, 'player-not-ready');
     }
 
-    removePlayer(id) {
-        console.log(`remove player with id: ${id}`);
-        let removedPlayer = {};
-        this.players = this.players.filter(player => {
-            if (player.id === id) {
-                removedPlayer = {
-                    username: player.username,
-                    id: player.id
-                };
-            } else {
-                return true;
-            }
-        });
-        return removedPlayer;
+    getTableId() {
+        return this.id;
     }
 
     getNumOfPlayers() {

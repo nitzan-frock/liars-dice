@@ -4,37 +4,42 @@ const Table = require('./Table');
 const Lobby = require('./Lobby');
 
 exports.run = (io) => {
+    let observer = {
+        onNotify: function(entity, event) {
+            switch (event) {
+                case 'player-joined-table':
+                    io.in('lobby').emit('player-joined-table', {
+                        id: entity.getTableId(),
+                        numPlayers: entity.getNumOfPlayers()
+                    });
+                case 'player-left-table':
+                    io.in('lobby').emit('player-left-table', {
+                        id: entity.getTableId(),
+                        numPlayers: entity.getNumOfPlayers()
+                    });
+                case 'round-start':
+                    break;
+                default:
+                    console.log(`"${event}" is not an event.`);
+                    break;
+            }
+        }
+    };
+
     const lobby = new Lobby();
+    lobby.addObserver(observer);
 
     let numUsers = 0;
     let defaultTable = new Table(Date.now());
+    defaultTable.addObserver(observer);
     let numTables = 1;
     let tables = [defaultTable];
-
 
     io.on('connection', socket => {
         console.log('new connection: ',socket.id);
         socket.join('lobby');
         let addedUser = false;
-        let observer = {
-            onNotify: function(entity, event) {
-                switch (event) {
-                    case 'player-ready':
-                        io.in('lobby').emit('player-ready', entity);
-                        break;
-                    case 'player-not-ready':
-                        io.in('lobby').emit('player-not-ready', entity);
-                    case 'round-start':
-                        break;
-                    default:
-                        console.log(`"${event}" is not an event.`);
-                        break;
-                }
-            }
-        }
-
-        //game.addObserver(observer);
-
+        
         socket.on('add user', (username) => {
             if (addedUser) return;
 
@@ -53,7 +58,7 @@ exports.run = (io) => {
                 socket.to('lobby').emit('user joined', player);
                 let tablesData = tables.map(table => {
                     return {
-                        id: table.id,
+                        id: table.getTableId(),
                         numPlayers: table.getNumOfPlayers(),
                         name: table.name
                     }
@@ -85,6 +90,26 @@ exports.run = (io) => {
             socket.to('lobby').emit('new message', {
                 username: socket.username,
                 message: data.message
+            });
+        });
+
+        socket.on('player-joined-table', tableId => {
+            let player = lobby.getPlayerById(socket.id);
+            console.log(tables);
+            tables.forEach(table => {
+                if (table.id === tableId) {
+                    console.log(`add ${socket.username} to table-${tableId}`);
+                    table.addPlayer(player);
+                }
+            });
+        });
+
+        socket.on('player-left-table', tableId => {
+            tables.forEach(table => {
+                if (table.id === tableId) {
+                    console.log(`remove ${socket.username} to table-${table.id}`);
+                    table.removePlayerById(socket.id);
+                }
             });
         });
 
